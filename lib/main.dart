@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:engage/core/theme/colors.dart';
+import 'features/ui/pages/events_page.dart';
+import 'features/ui/pages/home_page.dart';
+import 'features/ui/pages/profile_page.dart';
 void main() {
   runApp(const MainApp());
 }
@@ -11,263 +15,94 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.blue[50],
+      theme: ThemeData(
+        scaffoldBackgroundColor: AppColors.background,
+      ),
+      home: const MainNavigationShell(),
+    );
+  }
+}
 
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Engage'
-            , style: TextStyle(color: Colors.green[700], fontWeight: FontWeight.bold, fontFamily: '', fontSize: 31)
-            ),
-          ),
+class MainNavigationShell extends StatefulWidget {
+    const MainNavigationShell({super.key});
+
+    @override
+    State<MainNavigationShell> createState() => _MainNavigationShellState();
+}
+
+class _MainNavigationShellState extends State<MainNavigationShell> {
+  int _currentPage = 1;
+
+  late final PageController _pageController;
+
+  final List<Widget> _pages = const [
+    EventsPage(),
+    HomePage(),
+    ProfilePage()
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentPage);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _BottomNavBarTapped(int page){
+    _pageController.animateToPage(
+      page,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeInOut 
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Scaffold(
+      
+      appBar: AppBar(
+        title: Text(
+          'Engage',
+          style: TextStyle(
+          color: AppColors.appBarText,
+          fontWeight: FontWeight.bold,
+          fontFamily: '',
+          fontSize: 31
+          )
         ),
+        backgroundColor: AppColors.appBarBackground,
+      ),
 
-
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-
-            children: [
-              
-              
-
-              const Text(
-                'Events Activity',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 20,
-                ),
-              ),
-
-              Container(
-                padding: const EdgeInsets.all(15),
-
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-
-                  children: [
-                    Container(
-                      height: 90,
-                      width: 90,
-                      decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5),
-                  
-                      ),
-
-                      child: Column(
-                        children: [
-
-                          Spacer(),
-
-                          Text(
-                            '0',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 30,
-
-                            ),
-                                                        
-                          ),
-
-                          Spacer(),
-
-                          Text(
-                            'Attended',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                          
-                            ),
-                          ),
-
-                        ]
-                      ),
-
-                    ),
-
-                    Spacer(),
-                    
-                    Container(
-                      height: 90,
-                      width: 90,
-                      decoration: BoxDecoration(
-                      color: Colors.white,
-                       borderRadius: BorderRadius.circular(5),
-                  
-                      ),
-
-                      child: Column(
-                        children: [
-
-                          Spacer(),
-
-                          Text(
-                            '0',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 30,
-
-                            ),
-                                                        
-                          ),
-
-                          Spacer(),
-
-                          Text(
-                            'Registered',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                          
-                            ),
-                          ),
-
-                        ]
-                      ),
-
-                    ),
-
-                    Spacer(),
-                    
-                    Container(
-                      height: 90,
-                      width: 90,
-                      decoration: BoxDecoration(
-                      color: Colors.white,
-                       borderRadius: BorderRadius.circular(5),
-                  
-                      ),
-
-                      child: Column(
-                        children: [
-
-                          Spacer(),
-
-                          Text(
-                            '0',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 30,
-
-                            ),
-                                                        
-                          ),
-
-                          Spacer(),
-
-                          Text(
-                            'Unregistered',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                          
-                            ),
-                          ),
-
-                        ]
-                      ),
-
-                    ),
-
-                  ],
-
-                    
-                ),
-
-              ),
-
-              const Text(
-                'Upcoming Events',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 20,
-                )
-
-              ),
-
-              const SizedBox(height: 10),
-
-              Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                  children: [
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: const [
-
-                        Text(
-                          'App Design',
-                          style: TextStyle(color: Colors.blue, fontSize: 20), 
-                        ),
-
-                        SizedBox(height: 4),
-
-                        Text(
-                          'This is the descriptions for the event',
-                          style: TextStyle(color: Colors.black, fontSize: 14),
-                        ),
-
-                      ]
-
-                    ),
-
-                    const Spacer(),
-
-                    ElevatedButton(
-                      onPressed: (){}, 
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        
-                      ),
-                      child: const Text('Register'),
-
-                    )
-
-                  ],
-
-                ),
-
-              )
-
-            ],
-
-          ),
+      body: Padding(
+        padding: EdgeInsets.all(0), 
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (int page){
+            setState(() {
+              _currentPage = page;
+            });
+          },
+          children: _pages,
         ),
+      ),
 
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: Colors.yellow,
-          child: const Icon(Icons.add)
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.navBarBackground,
+        unselectedItemColor: AppColors.navBarUnselectItem,
+        selectedItemColor: AppColors.navBarSelectItem,
 
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          unselectedItemColor: Colors.grey[10],
-          selectedItemColor: Colors.grey,
+        currentIndex: _currentPage,
 
-          items: const [
-            BottomNavigationBarItem(
+        onTap: _BottomNavBarTapped,
+
+        items: const [
+          BottomNavigationBarItem(
               icon: Icon(Icons.upcoming),
               label: 'Upcoming Events',
             ),
@@ -281,10 +116,12 @@ class MainApp extends StatelessWidget {
               icon: Icon(Icons.person),
               label: 'Profile',
             )
-          ],
-        ),
+        ],
 
       ),
+
     );
+    
   }
+
 }
