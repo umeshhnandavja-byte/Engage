@@ -1,18 +1,18 @@
+import 'package:engage/features/ui/web/widgets/organiser_event_card.dart';
 import 'package:flutter/material.dart';
-import '../../../core/theme/colors.dart';
-import '../../events/data/models/event_model.dart';
-import '../../ui/widgets/event_card.dart';
+import '../../../../core/theme/colors.dart';
+import '../../../events/data/models/event_model.dart';
 
-class EventsPage extends StatefulWidget{
+class OrganiserEventsPage extends StatefulWidget{
 
-  const EventsPage({super.key});
+  const OrganiserEventsPage({super.key});
 
   @override
-  State<EventsPage> createState() => _EventsPageState();
+  State<OrganiserEventsPage> createState() => _OrganiserEventsPageState();
 
 }
 
-class _EventsPageState extends State<EventsPage>{
+class _OrganiserEventsPageState extends State<OrganiserEventsPage>{
 
   final List<EventModel> _events = [
 
@@ -62,10 +62,10 @@ class _EventsPageState extends State<EventsPage>{
               (event) => Padding(
 
                 padding: EdgeInsets.only(bottom: 10),
-                child: EventCard(
+                child: OrganiserEventCard(
                   title: event.title,
                   description: event.description,
-                  buttonText: 'Register'
+                  buttonText: 'Edit'
                 ),
 
               ),

@@ -1,12 +1,13 @@
+import 'package:engage/features/ui/web/pages/organiser_event_page.dart';
 import 'package:flutter/material.dart';
-import '../../../core/theme/colors.dart';
+import '../../../../core/theme/colors.dart';
 
-class EventCard extends StatelessWidget{
+class OrganiserEventCard extends StatelessWidget{
   final String title;
   final String description;
   final String buttonText;
   
-  const EventCard({
+  const OrganiserEventCard({
     super.key,
     required this.title,
     required this.description,
@@ -53,13 +54,20 @@ class EventCard extends StatelessWidget{
             const Spacer(),
 
             ElevatedButton(
-              onPressed: (){}, 
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OrganiserEventPage(),
+                  ),
+                );
+              }, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.registerButtonBackground,
                 foregroundColor: AppColors.registerButtonforeground,
                 
               ),
-              child: const Text('Register'),
+              child: Text(buttonText),
 
             )
 

@@ -15,6 +15,10 @@ class AppColors {
   static final Color navBarSelectItem = Colors.grey;
   static final Color navBarUnselectItem = Colors.grey[200]!;
 
+  // Login Portal
+  static final Color loginBackground = Colors.white;
+  static final Color loginText = Colors.green[700]!;
+
   // Container
 
     // Event Activity
@@ -28,6 +32,7 @@ class AppColors {
     static final Color eventsTitle = Colors.red;
     static final Color eventsHeading = Colors.blue;
     static final Color eventsDescription = Colors.black;
+    static final Color eventsConducted  = Colors.yellow;
 
   // Buttons
 
@@ -39,4 +44,14 @@ class AppColors {
     static final Color floatingButtonBackground = Colors.yellow;
     static final Color floatingButtonForeground = Colors.black;
 
+    // Add Event
+    static final Color addEventButtonBackground = Colors.green[50]!;
+
+    //Edit Event
+    static final Color editEventButtonBackground = Colors.green[50]!;
+
+  //Profile
+  static final Color profileTitle = Colors.blue;
+  static final Color profileBackground = Colors.white;
+  
 }

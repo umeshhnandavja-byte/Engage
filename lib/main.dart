@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:engage/core/theme/colors.dart';
-import 'features/ui/pages/events_page.dart';
-import 'features/ui/pages/home_page.dart';
-import 'features/ui/pages/profile_page.dart';
+import 'features/ui/mobile/pages/events_page.dart';
+import 'features/ui/mobile/pages/home_page.dart';
+import 'features/ui/mobile/pages/profile_page.dart';
 void main() {
   runApp(const MainApp());
 }
@@ -34,12 +34,6 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
   int _currentPage = 1;
 
   late final PageController _pageController;
-
-  final List<Widget> _pages = const [
-    EventsPage(),
-    HomePage(),
-    ProfilePage()
-  ];
 
   @override
   void initState() {
@@ -88,7 +82,11 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
               _currentPage = page;
             });
           },
-          children: _pages,
+          children: [
+            EventsPage(),
+            HomePage(),
+            ProfilePage()
+          ],
         ),
       ),
 
