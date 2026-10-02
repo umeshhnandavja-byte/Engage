@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
+import '../pages/new_event_page.dart';
 
 class NewEventButton extends StatelessWidget{
   const NewEventButton({super.key});
@@ -9,7 +10,12 @@ class NewEventButton extends StatelessWidget{
     return FloatingActionButton.large(
       backgroundColor: AppColors.addEventButtonBackground,
       child: Icon(Icons.add, size: 36),
-      onPressed: (){},
+      onPressed: (){
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const NewEventPage()),
+        );
+      },
     );
   }
 }

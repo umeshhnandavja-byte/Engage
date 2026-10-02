@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class ProfileCard extends StatelessWidget{
   const ProfileCard ({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null){
+      return const SizedBox.shrink();
+    }
+
     return
       Container(
         padding: EdgeInsets.all(20),
@@ -31,8 +38,8 @@ class ProfileCard extends StatelessWidget{
                           crossAxisAlignment: CrossAxisAlignment.start,
 
                           children: [
-                            Text('Full Name'),
-                            Text('Email'),
+                            Text(user.displayName ?? 'Name not Found'),
+                            Text(user.email ?? 'No Email Found'),
 
                           ],
                         ),

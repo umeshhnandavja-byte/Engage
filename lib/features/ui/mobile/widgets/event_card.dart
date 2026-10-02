@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
 
 class EventCard extends StatelessWidget{
+  final String eventId;
   final String title;
   final String description;
   final String buttonText;
   
   const EventCard({
     super.key,
+    required this.eventId,
     required this.title,
     required this.description,
     required this.buttonText
@@ -58,7 +60,7 @@ class EventCard extends StatelessWidget{
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EventPage(),
+                    builder: (context) => EventPage(eventId: eventId),
                   ),
                 );
               }, 

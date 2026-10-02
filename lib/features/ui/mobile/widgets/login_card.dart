@@ -19,7 +19,7 @@ class _LoginCardState extends State<LoginCard> {
     setState(() => _isLoading = true);
 
     try {
-      final creds = await _authService.signInWithGoogleWeb();
+      final creds = await _authService.signInWithGoogle();
       if (creds != null && mounted) {
         widget.onLoginSuccess?.call();
       }
@@ -47,7 +47,7 @@ class _LoginCardState extends State<LoginCard> {
       child: Column(
         children: [
           Text(
-            'Organiser Login Portal',
+            'Login Portal',
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,

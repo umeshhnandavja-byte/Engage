@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "685652855514",
+    "project_id": "engage-app-ce1dc",
+    "storage_bucket": "engage-app-ce1dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685652855514:android:11f92ec5621b8f505f73e3",
+        "android_client_info": {
+          "package_name": "com.example.engage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "685652855514-kt3ii4vh0ka4vt9jtlunt1s4tjfufnnb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.engage",
+            "certificate_hash": "b5940ab7fdffee481247024c2aba3bc309219015"
+          }
+        },
+        {
+          "client_id": "685652855514-26eipaeb2qnigj0ajsbjfvngrfbhom3d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDarlqHqpLgTye2mkOOMef-cVTz3-w2p9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "685652855514-26eipaeb2qnigj0ajsbjfvngrfbhom3d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "685652855514-ir2dmgnu6mto9b71qc20rnp9sek3svh4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.engage"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
 
 class OrganiserEventCard extends StatelessWidget{
+  final String eventId;
   final String title;
   final String description;
   final String buttonText;
   
   const OrganiserEventCard({
     super.key,
+    required this.eventId,
     required this.title,
     required this.description,
     required this.buttonText
@@ -58,7 +60,7 @@ class OrganiserEventCard extends StatelessWidget{
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OrganiserEventPage(),
+                    builder: (context) => OrganiserEventPage(eventId: eventId),
                   ),
                 );
               }, 

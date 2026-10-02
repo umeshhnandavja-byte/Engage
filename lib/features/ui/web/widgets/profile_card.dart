@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class OrganiserProfileCard extends StatelessWidget{
   const OrganiserProfileCard ({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null){
+      return const SizedBox.shrink();
+    }
+
     return
       Container(
         padding: EdgeInsets.all(20),
@@ -35,8 +42,12 @@ class OrganiserProfileCard extends StatelessWidget{
                           crossAxisAlignment: CrossAxisAlignment.start,
 
                           children: [
-                            Text('Organiser Name'),
-                            Text('Organiser Email')
+                            Text(
+                              user.displayName ?? 'Organiser',
+                            ),
+                            Text(
+                              user.email ?? 'Email not Found',
+                            ),
 
                           ],
                         ),

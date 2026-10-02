@@ -1,10 +1,22 @@
+import 'package:engage/features/ui/mobile/pages/login_portal.dart';
 import 'package:flutter/material.dart';
 
 import 'package:engage/core/theme/colors.dart';
 import 'features/ui/mobile/pages/events_page.dart';
 import 'features/ui/mobile/pages/home_page.dart';
 import 'features/ui/mobile/pages/profile_page.dart';
-void main() {
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
+
   runApp(const MainApp());
 }
 
@@ -18,7 +30,27 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
       ),
-      home: const MainNavigationShell(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot){
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (snapshot.hasData && snapshot.data != null) {
+            return const MainNavigationShell();
+          }
+
+          return const Scaffold(
+            backgroundColor: Colors.red,
+            body: Center(
+              child: LoginPortal(),
+            ),
+          );
+        }
+      ),
     );
   }
 }
