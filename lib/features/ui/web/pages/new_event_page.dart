@@ -1,6 +1,6 @@
 import 'package:engage/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,8 +27,8 @@ class _NewEventPageState extends State<NewEventPage> {
 
   bool _isPublishing = false;
 
-  Uint8List? _selectedImageBytes;
-  String? _selectedImageName;
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void dispose() {
@@ -40,19 +40,13 @@ class _NewEventPageState extends State<NewEventPage> {
   }
 
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final XFile? file = await picker.pickImage(
+    final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 85,
     );
-
-    if (file != null) {
-      final bytes = await file.readAsBytes();
-      setState(() {
-        _selectedImageBytes = bytes;
-        _selectedImageName = file.name;
-      });
+    if(pickedFile != null){
+      setState(() => _selectedImage = File(pickedFile.path));
     }
+
   }
 
   Future<void> _pickDate() async{
@@ -115,60 +109,72 @@ class _NewEventPageState extends State<NewEventPage> {
     });
 
     try{
-      String uploadImageUrl = '';
+      Future<String?> _uploadToSupabase(File imageFile) async{
+        try{
 
-      if (_selectedImageBytes != null) {
-        final supabase = Supabase.instance.client;
-        final cleanFileName = _selectedImageName?.replaceAll(' ', '_') ?? 'poster.jpg';
-        final filePath = 'banners/${DateTime.now().millisecondsSinceEpoch}_$cleanFileName';
+          if (_selectedImage != null) {
+            final supabase = Supabase.instance.client;
+            final fileName = 'banners/${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-        // Upload raw bytes directly to the Supabase public bucket
-        await supabase.storage.from(AppConstants.eventImagesBucket).uploadBinary(
-              filePath,
-              _selectedImageBytes!,
-              fileOptions: const FileOptions(
-                contentType: 'image/jpeg',
-                upsert: true,
-              ),
-            );
+            await supabase.storage.from(AppConstants.eventImagesBucket).upload(
+                  fileName,
+                  imageFile,
+                  fileOptions: const FileOptions(
+                    contentType: 'image/jpeg',
+                    upsert: false,
+                  ),
+                );
 
-        // Retrieve the public HTTPS image URL
-        uploadImageUrl = supabase.storage.from(AppConstants.eventImagesBucket).getPublicUrl(filePath);
+            return supabase.storage.from(AppConstants.eventImagesBucket).getPublicUrl(fileName);
+          }
+        }catch(e){
+          SnackBar(content: Text('Image Upload Error: $e'));
+        }
+
       }
-
-      final startDateTime = DateTime(
-        _eventDate!.year, _eventDate!.month, _eventDate!.day, 
-        _startTime!.hour, _startTime!.minute,
-      );
       
-      final endDateTime = DateTime(
-        _eventDate!.year, _eventDate!.month, _eventDate!.day, 
-        _endTime!.hour, _endTime!.minute,
-      );
+      String? uploadImageUrl = '';  
 
-      await FirebaseFirestore.instance.collection(AppConstants.eventsCollection).add({
-        'name': _nameController.text.trim(),
-        'shortDescription': _shortdescriptionController.text.trim(),
-        'longDescription': _longdescriptionController.text.trim(),
-        'photoUrl': uploadImageUrl,
-        'googleFormLink': _googleFormLinkController.text.trim(),
-        'startDateTIme': Timestamp.fromDate(startDateTime),
-        'endDateTIme': Timestamp.fromDate(endDateTime),
-        'createdAt': FieldValue.serverTimestamp(),
+      uploadImageUrl = await _uploadToSupabase(_selectedImage!);
 
-        'registeredCount': 0,
-        'registeredUsers': [],
-        
-        'organiserId': user?.uid, 
-        'organiserName': user?.displayName ?? 'Organiser',
-        'organiserEmail': user?.email ?? '',
-      });
+      if (uploadImageUrl == null) {
+        setState(() => _isPublishing = false);
+        SnackBar(content: Text('Image upload failed. Please try again.'));
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event published live!')),
+        final startDateTime = DateTime(
+          _eventDate!.year, _eventDate!.month, _eventDate!.day, 
+          _startTime!.hour, _startTime!.minute,
         );
-        Navigator.pop(context);
+        
+        final endDateTime = DateTime(
+          _eventDate!.year, _eventDate!.month, _eventDate!.day, 
+          _endTime!.hour, _endTime!.minute,
+        );
+
+        await FirebaseFirestore.instance.collection(AppConstants.eventsCollection).add({
+          'name': _nameController.text.trim(),
+          'shortDescription': _shortdescriptionController.text.trim(),
+          'longDescription': _longdescriptionController.text.trim(),
+          'photoUrl': uploadImageUrl,
+          'googleFormLink': _googleFormLinkController.text.trim(),
+          'startDateTIme': Timestamp.fromDate(startDateTime),
+          'endDateTIme': Timestamp.fromDate(endDateTime),
+          'createdAt': FieldValue.serverTimestamp(),
+
+          'registeredCount': 0,
+          'registeredUsers': [],
+          
+          'organiserId': user.uid, 
+          'organiserName': user.displayName ?? 'Organiser',
+          'organiserEmail': user.email ?? '',
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Event published live!')),
+          );
+          Navigator.pop(context);
+        }
       }
     }catch(e){
       if (mounted) {
@@ -206,14 +212,14 @@ class _NewEventPageState extends State<NewEventPage> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.grey.shade300, width: 1.5),
                       ),
-                      child: _selectedImageBytes != null
+                      child: _selectedImage != null
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Stack(
                                 fit: StackFit.expand,
                                 children: [
-                                  Image.memory(
-                                    _selectedImageBytes!,
+                                  Image.file(
+                                    _selectedImage!,
                                     fit: BoxFit.cover,
                                   ),
                                   Positioned(
@@ -269,11 +275,25 @@ class _NewEventPageState extends State<NewEventPage> {
 
                 const SizedBox(height: 10),
 
+                TextFormField(
+                  controller: _shortdescriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Event Short Description *',
+                    alignLabelWithHint: true,
+                    prefixIcon: Icon(Icons.description),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (val) => (val == null || val.trim().isEmpty)
+                      ? 'Event description is required'
+                      : null,
+                ),
+
+                const SizedBox(height: 10),
               
                 TextFormField(
                   controller: _longdescriptionController,
                   decoration: const InputDecoration(
-                    labelText: 'Event Description *',
+                    labelText: 'Event Long Description *',
                     alignLabelWithHint: true,
                     prefixIcon: Icon(Icons.description),
                     border: OutlineInputBorder(),
@@ -299,37 +319,41 @@ class _NewEventPageState extends State<NewEventPage> {
                 const SizedBox(height: 10),
 
                 
-                OutlinedButton.icon(
-                  onPressed: _pickDate,
-                  icon: const Icon(Icons.calendar_month),
-                  label: Text(
-                    _eventDate == null
-                        ? 'Select Event Date *'
-                        : 'Event Date: ${_eventDate!.day}/${_eventDate!.month}/${_eventDate!.year}',
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    alignment: Alignment.centerLeft,
-                  ),
-                ),
+                ListTile(
+                title: Text(_eventDate == null ? 'Pick Date' : 'Date Selected'),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: _pickDate,
+              ),
 
                 const SizedBox(height: 10),
-                
-                OutlinedButton.icon(
-                  onPressed: _pickDate,
-                  icon: const Icon(Icons.calendar_month),
-                  label: Text(
-                    _eventDate == null
-                        ? 'Select Event Date *'
-                        : 'Event Date: ${_eventDate!.day}/${_eventDate!.month}/${_eventDate!.year}',
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    alignment: Alignment.centerLeft,
-                  ),
-                ),
 
-                const SizedBox(height: 10),
+                Row(
+                children: [
+                  Expanded(
+                    child: Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.schedule),
+                        title: const Text('Start Time'),
+                        subtitle: Text(_startTime == null ? 'Set Start' : _startTime!.format(context)),
+                        onTap: () => _pickTime(isStart: true),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.schedule_send),
+                        title: const Text('End Time'),
+                        subtitle: Text(_endTime == null ? 'Set End' : _endTime!.format(context)),
+                        onTap: () => _pickTime(isStart: false),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 10),
 
                 
                 ElevatedButton(

@@ -1,7 +1,9 @@
+import 'package:engage/core/constants/app_constants.dart';
 import 'package:engage/features/ui/mobile/pages/login_portal.dart';
 import 'package:flutter/material.dart';
 
 import 'package:engage/core/theme/colors.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/ui/mobile/pages/events_page.dart';
 import 'features/ui/mobile/pages/home_page.dart';
 import 'features/ui/mobile/pages/profile_page.dart';
@@ -15,6 +17,11 @@ void main() async{
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform
+  );
+
+  await Supabase.initialize(
+    url: AppConstants.supabaseUrl,
+    publishableKey: AppConstants.supabaseAnonKey,
   );
 
   runApp(const MainApp());
