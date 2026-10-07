@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import '../widgets/activity_card.dart';
 
 class ActivityPage extends StatelessWidget{
-  const ActivityPage ({super.key});
+  final int registeredCount;
 
+  ActivityPage ({
+    super.key,
+    required this.registeredCount,
+  });
+  
   @override
   Widget build(BuildContext context) {
     return 
@@ -15,7 +20,7 @@ class ActivityPage extends StatelessWidget{
           Expanded(
             child: ActivityCard(
               category: 'Registered',
-              content: 0,
+              content: registeredCount,
             ),
           ),
 

@@ -48,7 +48,7 @@ class _OrganiserEventsPageState extends State<OrganiserEventsPage>{
         return EventModel(
           id: doc.id,
           title: data['name'] ?? 'Untitled Event',
-          description: data['description'] ?? 'No description',
+          shortDescription: data['shortDescription'] ?? 'No description',
         );
       }).toList();
 
@@ -105,7 +105,7 @@ class _OrganiserEventsPageState extends State<OrganiserEventsPage>{
                 child: OrganiserEventCard(
                   eventId: event.id,
                   title: event.title,
-                  description: event.description,
+                  shortDescription: event.shortDescription,
                   buttonText: 'Edit'
                 ),
 

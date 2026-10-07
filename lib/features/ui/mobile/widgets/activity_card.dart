@@ -5,7 +5,7 @@ class ActivityCard extends StatelessWidget{
   final String category;
   final int content;
   
-  const ActivityCard({
+  ActivityCard({
     super.key,
     required this.category,
     required this.content

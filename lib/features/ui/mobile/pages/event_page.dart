@@ -81,9 +81,14 @@ class _EventPageState extends State<EventPage> with WidgetsBindingObserver{
                 final db = FirebaseFirestore.instance;
 
                 final eventRef = db.collection(AppConstants.eventsCollection).doc(widget.eventId);
+                DocumentSnapshot eventName = await db.collection(AppConstants.eventsCollection).doc(widget.eventId).get();
+                
+                await db.collection(AppConstants.usersCollection).doc(user.uid).set({
+                  'eventsRegisteredCount': FieldValue.increment(1),
+                }, SetOptions(merge: true));
 
                 final userRegisteredEventRef = db
-                    .collection(AppConstants.eventsCollection)
+                    .collection(AppConstants.usersCollection)
                     .doc(user.uid)
                     .collection(AppConstants.userRegistered)
                     .doc(widget.eventId);
@@ -93,7 +98,7 @@ class _EventPageState extends State<EventPage> with WidgetsBindingObserver{
 
                   batch.set(userRegisteredEventRef, {
                     'eventId': widget.eventId,
-                    'name': 'Event Name', 
+                    'name': eventName.get('name'), 
                     'timestamp': FieldValue.serverTimestamp(),
                   });
 
@@ -144,7 +149,8 @@ class _EventPageState extends State<EventPage> with WidgetsBindingObserver{
 
           final data = snapshot.data!.data()!;
           final title = data['name'] ?? data['title'] ?? 'Untitled Event';
-          final description = data['description'] ?? 'No description provided.';
+          final shortDescription = data['shortDescription'] ?? 'No description provided.';
+          final longDescription = data['longDescription'] ?? 'No description provided.';
           final photoUrl = data['photoUrl'] as String?;
           final googleFormLink = data['googleFormLink'] as String?;
           final Timestamp? dateTimestamp = data['eventDate'] as Timestamp?;
@@ -187,7 +193,12 @@ class _EventPageState extends State<EventPage> with WidgetsBindingObserver{
                   ),
 
                   Text(
-                    description,
+                    shortDescription,
+                    style: TextStyle(fontSize: 15, color: AppColors.eventsDescription),
+                  ),
+                  
+                  Text(
+                    longDescription,
                     style: TextStyle(fontSize: 15, color: AppColors.eventsDescription),
                   ),
 

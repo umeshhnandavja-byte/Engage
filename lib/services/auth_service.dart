@@ -46,6 +46,7 @@ class AuthService {
           'photoUrl': user.photoURL ?? '',
           'role': 'organiser',
           'lastLogin': FieldValue.serverTimestamp(),
+          'eventsRegisteredCount': 0,
         }, SetOptions(merge: true));
       }
 

@@ -32,7 +32,8 @@ class OrganiserEventPage extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-      return Scaffold( 
+      return Scaffold(
+      appBar: AppBar(), 
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future: FirebaseFirestore.instance.collection(AppConstants.eventsCollection).doc(eventId).get(),
         builder: (context, snapshot) {
@@ -41,7 +42,6 @@ class OrganiserEventPage extends StatelessWidget{
             return const Center(child: CircularProgressIndicator());
           }
 
-          // B: If there's an error or document doesn't exist
           if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
             return const Center(
               child: Text(
@@ -51,7 +51,6 @@ class OrganiserEventPage extends StatelessWidget{
             );
           }
 
-          // C: Document successfully loaded!
           final data = snapshot.data!.data()!;
           final title = data['name'] ?? data['title'] ?? 'Untitled Event';
           final description = data['description'] ?? 'No description provided.';

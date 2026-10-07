@@ -111,6 +111,10 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
         ),
         backgroundColor: AppColors.appBarBackground,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){},
+        child: Icon(Icons.qr_code_scanner),
+      ),
 
       body: Padding(
         padding: EdgeInsets.all(0), 

@@ -47,7 +47,7 @@ class _EventsPageState extends State<EventsPage>{
         return EventModel(
           id: doc.id,
           title: data['name'] ?? 'Untitled Event',
-          description: data['description'] ?? 'No description',
+          shortDescription: data['shortDescription'] ?? 'No description',
         );
       }).toList();
 
@@ -103,7 +103,7 @@ class _EventsPageState extends State<EventsPage>{
                 child: EventCard(
                   eventId: event.id,
                   title: event.title,
-                  description: event.description,
+                  shortDescription: event.shortDescription,
                   buttonText: 'Register',
                 ),
 

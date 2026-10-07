@@ -1,6 +1,6 @@
 import 'package:engage/core/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +27,8 @@ class _NewEventPageState extends State<NewEventPage> {
 
   bool _isPublishing = false;
 
-  File? _selectedImage;
+  Uint8List? _selectedImage;
+  String? _selectedImageExt;
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -42,11 +43,33 @@ class _NewEventPageState extends State<NewEventPage> {
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
+      maxWidth: 1200,
+      imageQuality: 80
     );
-    if(pickedFile != null){
-      setState(() => _selectedImage = File(pickedFile.path));
+    if (pickedFile != null) {
+    final Uint8List imageBytes = await pickedFile.readAsBytes();
+    
+    final double fileSizeInMB = imageBytes.lengthInBytes / (1024 * 1024);
+
+    if (fileSizeInMB > 2.0) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Image is too large! Please choose an image under 2MB.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return; 
     }
 
+    final String extension = pickedFile.name.split('.').last;
+
+    setState(() {
+      _selectedImage = imageBytes;
+      _selectedImageExt = extension;
+    });
+  }
   }
 
   Future<void> _pickDate() async{
@@ -86,7 +109,7 @@ class _NewEventPageState extends State<NewEventPage> {
     }
     final uri = Uri.tryParse(value.trim());
     if (uri == null || !uri.hasScheme || (!value.contains('forms.gle') && !value.contains('forms.google.com') && !value.contains('docs.google.com/forms'))) {
-      return 'Please enter a valid Google Form URL (e.g., https://forms.gle/...)';
+      return 'Please enter a valid Google Form URL';
     }
     return null;
   }
@@ -109,7 +132,7 @@ class _NewEventPageState extends State<NewEventPage> {
     });
 
     try{
-      Future<String?> _uploadToSupabase(File imageFile) async{
+      Future<String?> _uploadToSupabase(Uint8List imageFile, String extension) async{
         try{
 
           if (_selectedImage != null) {
@@ -119,8 +142,8 @@ class _NewEventPageState extends State<NewEventPage> {
             await supabase.storage.from(AppConstants.eventImagesBucket).upload(
                   fileName,
                   imageFile,
-                  fileOptions: const FileOptions(
-                    contentType: 'image/jpeg',
+                  fileOptions: FileOptions(
+                    contentType: 'image/$extension',
                     upsert: false,
                   ),
                 );
@@ -135,7 +158,7 @@ class _NewEventPageState extends State<NewEventPage> {
       
       String? uploadImageUrl = '';  
 
-      uploadImageUrl = await _uploadToSupabase(_selectedImage!);
+      uploadImageUrl = await _uploadToSupabase(_selectedImage!, _selectedImageExt!);
 
       if (uploadImageUrl == null) {
         setState(() => _isPublishing = false);
@@ -218,7 +241,7 @@ class _NewEventPageState extends State<NewEventPage> {
                               child: Stack(
                                 fit: StackFit.expand,
                                 children: [
-                                  Image.file(
+                                  Image.memory(
                                     _selectedImage!,
                                     fit: BoxFit.cover,
                                   ),

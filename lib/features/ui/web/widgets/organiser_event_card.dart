@@ -5,14 +5,14 @@ import '../../../../core/theme/colors.dart';
 class OrganiserEventCard extends StatelessWidget{
   final String eventId;
   final String title;
-  final String description;
+  final String shortDescription;
   final String buttonText;
   
   const OrganiserEventCard({
     super.key,
     required this.eventId,
     required this.title,
-    required this.description,
+    required this.shortDescription,
     required this.buttonText
   });
   
@@ -44,7 +44,7 @@ class OrganiserEventCard extends StatelessWidget{
                   SizedBox(height: 4),
   
                   Text(
-                    description,
+                    shortDescription,
                     style: TextStyle(color: AppColors.eventsDescription, fontSize: 14),
                   ),
   

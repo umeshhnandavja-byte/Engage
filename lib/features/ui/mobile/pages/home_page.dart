@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/colors.dart';
 import 'package:engage/features/ui/mobile/pages/events_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:engage/core/constants/app_constants.dart';
 
 class HomePage extends StatefulWidget{
 
@@ -14,6 +17,28 @@ class HomePage extends StatefulWidget{
 }
 
 class _HomePageState extends State<HomePage>{
+  int registeredCount = 0;
+  bool isLoading = true;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCount();
+  }
+  
+  Future<void> _fetchCount() async {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) return;
+
+      final doc = await FirebaseFirestore.instance.collection(AppConstants.usersCollection).doc(uid).get();
+
+      // 2. Update the variable and refresh the screen
+      setState(() {
+        registeredCount = doc.data()?['eventsRegisteredCount'] ?? 0;
+        isLoading = false;
+      });
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +63,9 @@ class _HomePageState extends State<HomePage>{
 
               SizedBox(height: 10),
 
-              ActivityPage(),
+              ActivityPage(
+                registeredCount: registeredCount,
+              ),
   
             ],
 
