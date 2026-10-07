@@ -32,9 +32,7 @@ class OrganiserEventPage extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-        home: Scaffold( 
+      return Scaffold( 
       body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future: FirebaseFirestore.instance.collection(AppConstants.eventsCollection).doc(eventId).get(),
         builder: (context, snapshot) {
@@ -146,8 +144,7 @@ class OrganiserEventPage extends StatelessWidget{
           );
           }
         )
-      )
-    );
+      );
     
   }
 }

@@ -38,38 +38,36 @@ class _LoginCardState extends State<LoginCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(30),
-      decoration: BoxDecoration(
-        color: AppColors.loginBackground,
-        borderRadius: BorderRadius.circular(40)
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Login Portal',
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: AppColors.loginText
+    return Center( 
+      child: Container(
+        padding: EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: AppColors.loginBackground,
+          borderRadius: BorderRadius.circular(40)
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Login Portal',
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: AppColors.loginText
+              ),
             ),
-          ),
 
-          ElevatedButton(
-            onPressed: _signIn,
-            child: Text('Sign In With Google')
-          ),
+            _isLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton.icon(
+                      onPressed: _signIn,
+                      icon: const Icon(Icons.login),
+                      label: const Text('Sign in with Google'),
+                    ),
 
-          _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton.icon(
-                    onPressed: _signIn,
-                    icon: const Icon(Icons.login),
-                    label: const Text('Sign in with Google'),
-                  ),
-
-        ],
-      ),
+          ],
+        ),
+      )
     );
   }
 }

@@ -124,14 +124,8 @@ class _EventPageState extends State<EventPage> with WidgetsBindingObserver{
   
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){},
-          child: Icon(Icons.keyboard_arrow_left_rounded),
-        ),
+      return Scaffold(
+        appBar: AppBar(),
         body: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future: FirebaseFirestore.instance.collection(AppConstants.eventsCollection).doc(widget.eventId).get(),
         builder: (context, snapshot) {
@@ -241,8 +235,7 @@ class _EventPageState extends State<EventPage> with WidgetsBindingObserver{
           }
         )
         
-      )
-    );
+      );
     
   }
 }

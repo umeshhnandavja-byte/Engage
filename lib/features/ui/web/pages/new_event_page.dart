@@ -17,11 +17,15 @@ class _NewEventPageState extends State<NewEventPage> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  final _shortdescriptionController = TextEditingController();
+  final _longdescriptionController = TextEditingController();
   final _googleFormLinkController = TextEditingController();
 
   DateTime? _eventDate;
-  bool _isSaving = false;
+  TimeOfDay? _startTime;
+  TimeOfDay? _endTime;
+
+  bool _isPublishing = false;
 
   Uint8List? _selectedImageBytes;
   String? _selectedImageName;
@@ -29,7 +33,8 @@ class _NewEventPageState extends State<NewEventPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _descriptionController.dispose();
+    _shortdescriptionController.dispose();
+    _longdescriptionController.dispose();
     _googleFormLinkController.dispose();
     super.dispose();
   }
@@ -51,15 +56,32 @@ class _NewEventPageState extends State<NewEventPage> {
   }
 
   Future<void> _pickDate() async{
+    final now = DateTime.now();
     final picked = await showDatePicker(
       context: context, 
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now()
+      initialDate: _eventDate ?? now,
+      firstDate: now,
+      lastDate: DateTime(now.year + 2),
     );
     if(picked != null){
       setState(() {
         _eventDate = picked;
+      });
+    }
+  }
+
+  Future<void> _pickTime({required bool isStart}) async{
+    final picked = await showTimePicker(
+      context: context, 
+      initialTime: TimeOfDay.now(),
+    );
+    if(picked != null){
+      setState(() {
+        if(isStart){
+          _startTime = picked;
+        }else{
+          _endTime = picked;
+        }
       });
     }
   }
@@ -78,19 +100,21 @@ class _NewEventPageState extends State<NewEventPage> {
   Future<void> _publishEvent() async{
     if (!_formKey.currentState!.validate()) return ;
 
-    if(_eventDate == null){
+    if(_eventDate == null || _startTime == null || _endTime == null){
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please Select an Event date')),
+        const SnackBar(content: Text('Please Select Date and Both times.')),
       );
       return ;  
     }
 
+    final user = FirebaseAuth.instance.currentUser;
+    if(user == null) return;
+
     setState(() {
-      _isSaving = true;
+      _isPublishing = true;
     });
 
     try{
-      final user = FirebaseAuth.instance.currentUser;
       String uploadImageUrl = '';
 
       if (_selectedImageBytes != null) {
@@ -112,15 +136,30 @@ class _NewEventPageState extends State<NewEventPage> {
         uploadImageUrl = supabase.storage.from(AppConstants.eventImagesBucket).getPublicUrl(filePath);
       }
 
+      final startDateTime = DateTime(
+        _eventDate!.year, _eventDate!.month, _eventDate!.day, 
+        _startTime!.hour, _startTime!.minute,
+      );
+      
+      final endDateTime = DateTime(
+        _eventDate!.year, _eventDate!.month, _eventDate!.day, 
+        _endTime!.hour, _endTime!.minute,
+      );
+
       await FirebaseFirestore.instance.collection(AppConstants.eventsCollection).add({
         'name': _nameController.text.trim(),
-        'description': _descriptionController.text.trim(),
+        'shortDescription': _shortdescriptionController.text.trim(),
+        'longDescription': _longdescriptionController.text.trim(),
         'photoUrl': uploadImageUrl,
         'googleFormLink': _googleFormLinkController.text.trim(),
-        'eventDate': Timestamp.fromDate(_eventDate!),
+        'startDateTIme': Timestamp.fromDate(startDateTime),
+        'endDateTIme': Timestamp.fromDate(endDateTime),
         'createdAt': FieldValue.serverTimestamp(),
+
+        'registeredCount': 0,
+        'registeredUsers': [],
         
-        'organiserId': user?.uid,
+        'organiserId': user?.uid, 
         'organiserName': user?.displayName ?? 'Organiser',
         'organiserEmail': user?.email ?? '',
       });
@@ -139,7 +178,7 @@ class _NewEventPageState extends State<NewEventPage> {
       }
     }finally {
       if (mounted) {
-        setState(() => _isSaving = false);
+        setState(() => _isPublishing = false);
       }
     }
   }
@@ -151,6 +190,7 @@ class _NewEventPageState extends State<NewEventPage> {
 
       body: Center(
         child: SingleChildScrollView(
+          padding: EdgeInsets.all(10),
           child: Form(
             key: _formKey,
             child: Column(
@@ -231,7 +271,7 @@ class _NewEventPageState extends State<NewEventPage> {
 
               
                 TextFormField(
-                  controller: _descriptionController,
+                  controller: _longdescriptionController,
                   decoration: const InputDecoration(
                     labelText: 'Event Description *',
                     alignLabelWithHint: true,
@@ -274,14 +314,30 @@ class _NewEventPageState extends State<NewEventPage> {
                 ),
 
                 const SizedBox(height: 10),
+                
+                OutlinedButton.icon(
+                  onPressed: _pickDate,
+                  icon: const Icon(Icons.calendar_month),
+                  label: Text(
+                    _eventDate == null
+                        ? 'Select Event Date *'
+                        : 'Event Date: ${_eventDate!.day}/${_eventDate!.month}/${_eventDate!.year}',
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    alignment: Alignment.centerLeft,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
 
                 
                 ElevatedButton(
-                  onPressed: _isSaving ? null : _publishEvent,
+                  onPressed: _isPublishing ? null : _publishEvent,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: _isSaving
+                  child: _isPublishing
                       ? const SizedBox(
                           width: 22,
                           height: 22,
