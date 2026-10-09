@@ -60,7 +60,7 @@ class OrganiserEventCard extends StatelessWidget{
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OrganiserEventPage(eventId: eventId),
+                    builder: (context) => OrganiserEventPage(eventId: eventId,quizId: eventId),
                   ),
                 );
               }, 

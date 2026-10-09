@@ -1,4 +1,5 @@
 import 'package:engage/core/constants/app_constants.dart';
+import 'package:engage/features/ui/web/pages/organiser_quiz_page.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class OrganiserEventPage extends StatelessWidget{
   final String eventId;
-  const OrganiserEventPage ({super.key, required this.eventId});
+  final String quizId;
+  const OrganiserEventPage ({super.key, required this.eventId, required this.quizId});
 
   Future<void> _openGoogleForm(BuildContext context, String? urlString) async {
     if (urlString == null || urlString.isEmpty) {
@@ -134,6 +136,17 @@ class OrganiserEventPage extends StatelessWidget{
                                   ),
                                 ),
                               ),
+
+                  ElevatedButton(
+                    onPressed: (){
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => OrganiserQuizPage(quizId: quizId)
+                        )
+                      );
+                    }, 
+                      child: Text('Quiz')),                             
 
                 ],
               )
