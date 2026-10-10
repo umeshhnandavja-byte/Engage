@@ -1,4 +1,5 @@
 import 'package:engage/core/constants/app_constants.dart';
+import 'package:engage/features/ui/mobile/pages/quiz_page.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
 import 'package:intl/intl.dart';
@@ -236,6 +237,18 @@ class _EventPageState extends State<EventPage> with WidgetsBindingObserver{
                                   ),
                                 ),
                               ),
+
+                 ElevatedButton(
+                  onPressed: (){
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => QuizPage(quizId: widget.eventId)
+                      ) 
+                    );
+                  },
+                  child: Text('Quiz')
+                  )
 
                 ],
               )
