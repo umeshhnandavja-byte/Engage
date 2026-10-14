@@ -1,4 +1,5 @@
 import 'package:engage/core/constants/app_constants.dart';
+import 'package:engage/features/ui/web/pages/organiser_qr_page.dart';
 import 'package:engage/features/ui/web/pages/organiser_quiz_page.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
@@ -146,7 +147,19 @@ class OrganiserEventPage extends StatelessWidget{
                         )
                       );
                     }, 
-                      child: Text('Quiz')),                             
+                      child: Text('Quiz')), 
+
+                  ElevatedButton(
+                    onPressed: (){
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => OrganiserQrPage(eventId: eventId, eventTitle: title)
+                        )
+                      );
+                    }, 
+                      child: Text('Qr')), 
+
 
                 ],
               )
